@@ -1,0 +1,215 @@
+---
+title: "Micheline Restaurants' Cuisine Type and Their Prices "
+output: 
+  html_document:
+    toc: true
+    toc_float: true
+    toc_depth: 5
+  
+---
+
+
+
+Michelin stars are what every chef is looking for! Even the most renowned chefs will be worried about losing stars, and even cry after losing one or two stars. However, the majority of chefs are devoting their lives just for one star. It is obvious that Michelin stars are important for chefs, but the controversies around this guide always exist. 
+
+
+---------------------------------------
+
+
+
+# Contributors
+
+Ziyu Chen 
+[Personal Website](https://ziyu0303.github.io)
+
+
+----------------------------------------------------------------------------------------
+
+
+
+#  Cuisine Type and their Prices
+
+We will also analyze the relationship between the cuisine types and prices, -Grace
+
+
+```{r message=FALSE, warning =FALSE}
+
+library(tidyverse)
+library(readxl)
+library(ggplot2)
+library(plotly)
+
+final = read_csv("./michelin_data.csv")
+
+```
+
+Michelin starts are awarded to restaurants judged to be of a particularly high standard. Eateries that make the grade can be awarded on, two three stars. But what about the prices? Are certain cuisine associated with higher prices? In addition, do the prices varies by the continent?
+
+
+Within our existing dataset, let's first take a look at the number of cusine types in our Michelin restaurant:
+
+```{r message=FALSE, warning =FALSE}
+cuisine_type = final %>% 
+   group_by(cuisine) %>% 
+   summarise(count = n())  %>% 
+    mutate(cuisine = fct_reorder(cuisine, count)) 
+
+cuisine_plot = 
+  cuisine_type %>%
+  ggplot(aes(x = cuisine, y = count)) +
+  geom_point(color = "red") + 
+  theme(axis.text.x = element_text(angle = 90, vjust = 0.6, hjust = 0.5)) + 
+  ggtitle("Types of Cuisine Among All Micheline Star (1-3) Restaurants") +
+  xlab("Cuisine Type") +
+  ylab("Number of Restaurant") 
+
+ggplotly(cuisine_plot)
+
+```
+
+We can see that among all Michelin Restaurant, Modern Cuisine, Contemporary, Japanese, Creative, Cantonese, Modern British and French are at the top of the list. 
+
+
+Now let's take a look at the how these restaurants distributed around the world
+```{r message=FALSE, warning =FALSE}
+country = final %>% 
+   group_by(continent) %>% 
+   summarise(continent_count = n()) 
+   
+
+knitr::kable(country)
+```
+
+
+
+```{r message=FALSE, warning =FALSE}
+final_clean = final %>%
+   drop_na(price, continent)  %>% # still need to categorize the cuisine type
+   mutate(cuisine_cat = fct_collapse(cuisine,
+                   American = c("American", "Californian"), 
+                   Australian = c("Australian"),
+                   Other_Asian = c("Asian", "Asian contemporary", "Asian influences", "Peranakan"),
+                   Chinese = c("Cantonese", "Hang Zhou", "Sichuan", "Sichuan-Huai Yang", "Cantonese Roast Meats", "Fujian", "Hunanese and Sichuan", "Chinese", "Shanghainese", "Taiwanese", "Dim Sum", "Taizhou", "Noodles and congee"), 
+                   French = c("Classic French", "French contemporary", "Creative French", "French", "Modern French"),
+                   British = c("Creative British", "Traditional British", "Modern British"), 
+                   Other_European = c("European", "European contemporary", "Austrian", "Danish", "Finnish"),
+                   Meats = c("Meats and grills", "Barbecue"),
+                   Modern = c("modern", "Contemporary", "creative", "Fusion", "Modern cuisine", "Creative", "Gastropub", "Innovative"), 
+                   Other = c("International", "Street Food", "Temple cuisine", "Seafood", "Vegetarian", "Classic cuisine", "Market cuisine", "Regional cuisine", "Steakhouse", "Moroccan"), 
+                   Japanese = c("Japanese contemporary", "Sushi", "Teppanyaki", "Japanese"),
+                   Scandinavian = c("Scandinavian"),
+                   Italian = c("Italian", "Italian contemporary"),
+                   Korean = c("Korean", "Korean contemporary"), 
+                   Mediterranean = c("Mediterranean", "Mediterranean cuisine"),
+                   Thai = c("Thai", "Southern Thai", "Thai Contemporary"), 
+                   Indian = c("Indian"), 
+                   Spanish = c("Spanish"), 
+                   Mexican = c("Mexican"))
+  )
+```
+
+
+First, let's take a look at the cuisine type and their price around the world. 
+
+```{r message=FALSE, warning =FALSE}
+world_plot = final_clean %>%
+    mutate(cuisine = factor(cuisine_cat)) %>%
+    group_by(cuisine)%>%
+    summarise(mean_price = mean(price))  %>%
+  ggplot(aes(x = cuisine, y = mean_price, color = "red")) + 
+  geom_point(color = "darkgreen")+
+  theme(axis.text.x = element_text(angle = 90, vjust = 0.6, hjust = 0.5)) + 
+  ggtitle("The relationship between cuisine type and it's average price around the World") +
+  xlab("Cuisine Type") +
+  ylab("Mean Price of this Cuisine Type") 
+
+ggplotly(world_plot)
+```
+
+
+
+We can clearly see that some types of cuisine are usually priced higher than the others. For instance, Mediterranean cuisines (4.00) and Japanese cuisine (3.96) are at the highest price, while Australian (1.50) and Cantonese cuisines (2.03) typically have lower prices.
+
+
+```{r message=FALSE, warning =FALSE}
+final_asia = final_clean %>%
+   subset(continent == "Asia")
+```
+
+```{r message=FALSE, warning =FALSE}
+final_europe = final_clean %>%
+  subset(continent == "Europe")
+```
+
+```{r message=FALSE, warning =FALSE}
+final_na= final_clean %>%
+  subset(continent == "North America")
+```
+
+```{r message=FALSE, warning =FALSE}
+final_sa= final_clean %>%
+  subset(continent == "South America")
+```
+
+We have transformed the price points of each restaurants from a scale of 1-5
+Let's first explore the relationship between cusine type and its price in Asia
+```{r message=FALSE, warning =FALSE}
+asia_plot = final_asia %>%
+    mutate(cuisine_cat = factor(cuisine_cat)) %>%
+    group_by(cuisine_cat)%>%
+    summarise(mean_price = mean(price))  %>%
+  ggplot(aes(x = cuisine_cat, y = mean_price)) + 
+  geom_point(color = "red")+
+  theme(axis.text.x = element_text(angle = 90, vjust = 0.6, hjust = 0.5)) + 
+  ggtitle("Asia: The relationship between cuisine type and it's average price") +
+  xlab("Cuisine Type") +
+  ylab("Mean Price of this Cuisine Type") 
+
+ggplotly(asia_plot)
+
+```
+
+```{r message=FALSE, warning =FALSE}
+europe_plot = final_europe %>%
+    mutate(cuisine_cat = factor(cuisine_cat)) %>%
+    group_by(cuisine_cat)%>%
+    summarise(mean_price = mean(price))  %>%
+  ggplot(aes(x = cuisine_cat, y = mean_price)) + 
+  geom_point(color = "purple")+
+  theme(axis.text.x = element_text(angle = 90, vjust = 0.6, hjust = 0.5)) + 
+  ggtitle("Europe: The relationship between cuisine type and their average price") +
+  xlab("Cuisine Type") +
+  ylab("Mean Price of this Cuisine Type") 
+
+ggplotly(europe_plot)
+```
+
+```{r message=FALSE, warning =FALSE}
+na_plot = final_na %>%
+    mutate(cuisine_cat = factor(cuisine_cat)) %>%
+    group_by(cuisine_cat)%>%
+    summarise(mean_price = mean(price))  %>%
+  ggplot(aes(x = cuisine_cat, y = mean_price)) + 
+  geom_point(color = "darkblue")+
+  theme(axis.text.x = element_text(angle = 90, vjust = 0.6, hjust = 0.5)) + 
+  ggtitle("North America: The relationship between cuisine type and their average price") +
+  xlab("Cuisine Type") +
+  ylab("Mean Price of this Cuisine Type") 
+
+ggplotly(na_plot)
+```
+
+```{r message=FALSE, warning =FALSE}
+sa_plot = final_sa %>%
+    mutate(cuisine_cat = factor(cuisine_cat)) %>%
+    group_by(cuisine_cat)%>%
+    summarise(mean_price = mean(price))  %>%
+  ggplot(aes(x = cuisine_cat, y = mean_price)) + 
+  geom_point(color = "pink")+
+  theme(axis.text.x = element_text(angle = 90, vjust = 0.6, hjust = 0.5)) + 
+  ggtitle("South America: The relationship between cuisine types and their prices") +
+  xlab("Cuisine Type") +
+  ylab("Mean Price of this Cuisine Type") 
+
+ggplotly(sa_plot)
+```

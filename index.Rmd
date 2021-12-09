@@ -17,19 +17,10 @@ Michelin stars are what every chef is looking for! Even the most renowned chefs 
 
 
 
-# Contributors
 
-Ziyu Chen 
-[Personal Website](https://ziyu0303.github.io)
+##  Cuisine Type and their Prices
 
-
-----------------------------------------------------------------------------------------
-
-
-
-#  Cuisine Type and their Prices
-
-We will also analyze the relationship between the cuisine types and prices, -Grace
+Michelin starts are awarded to restaurants judged to be of a particularly high standard. Eateries that make the grade can be awarded on, two three stars. But what about the prices? Are certain cuisine associated with higher prices? In addition, do the prices varies by the continent?
 
 
 ```{r message=FALSE, warning =FALSE}
@@ -43,7 +34,9 @@ final = read_csv("./michelin_data.csv")
 
 ```
 
-Michelin starts are awarded to restaurants judged to be of a particularly high standard. Eateries that make the grade can be awarded on, two three stars. But what about the prices? Are certain cuisine associated with higher prices? In addition, do the prices varies by the continent?
+### Cusine Type Overview
+
+
 
 
 Within our existing dataset, let's first take a look at the number of cusine types in our Michelin restaurant:

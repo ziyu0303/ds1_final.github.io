@@ -8,18 +8,14 @@ navbar:
       href: data_exploration.html
     - text: 'Data Analysis'
       menu:
+        - text: 'Cuisine Type and Michelin Stars'
+          href: https://nz2333.github.io/cuisinetypeandstar.github.io/
         - text: 'Cuisine Type and Restaurant Price'
-          href: test_here.html
-        - text: 'Cuirsine Type and Michelin Star'
-          href: https://zl2974.github.io/risky_coffee/Report.html
-    - text: "Map"
+          href: https://ziyu0303.github.io/ds1_final.github.io/
+    - text: "Interactive Map"
       href: map.html
-    - text: 'Data'
-      href: https://www.kaggle.com/jackywang529/michelin-restaurants
-    - text: 'About'
-      href: Proposal.html
     - text: 'Report'
-      href: report.html
+      href: Proposal.html
     - icon: fa-envelope fa-lg
       href: mailto:<zc2555@cumc.columbia.edu>
     - icon: fa-github fa-lg
